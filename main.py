@@ -5,7 +5,7 @@
 # Gemaakt in 7 uur, daarna had ik meer toegevoegd
 
 project_info = {
-    "version": "v0.131"
+    "version": "v0.14"
 }
 
 import random
@@ -129,6 +129,7 @@ doRandomKeyPresses = False
 includeObjective = ""
 amountObjective = 0
 disableSound = True
+antiAlias = True
 
 if includeObjective not in objectivesList and includeObjective != "":
     raise ValueError("Objective not in list of objectives. See variable objectivesList to see all objectives")
@@ -272,17 +273,17 @@ def renderGrass():
             screen.blit(dirt, (x * 32, y * 18 + 618))
 
 
-objectivesPreset = font.render("", False, (0, 0, 0))
-objectivesText = font.render(activeObjectives[0] + ": " + progressObjectives[0], False, (0, 0, 0))
+objectivesPreset = font.render("", antiAlias, (0, 0, 0))
+objectivesText = font.render(activeObjectives[0] + ": " + progressObjectives[0], antiAlias, (0, 0, 0))
 objectivesText2 = objectivesPreset
 objectivesText3 = objectivesPreset
 objectivesText4 = objectivesPreset
 if len(activeObjectives) > 1:
-    objectivesText2 = font.render(activeObjectives[1] + ": " + progressObjectives[1], False, (0, 0, 0))
+    objectivesText2 = font.render(activeObjectives[1] + ": " + progressObjectives[1], antiAlias, (0, 0, 0))
     if len(activeObjectives) > 2:
-        objectivesText3 = font.render(activeObjectives[2] + ": " + progressObjectives[2], False, (0, 0, 0))
+        objectivesText3 = font.render(activeObjectives[2] + ": " + progressObjectives[2], antiAlias, (0, 0, 0))
         if len(activeObjectives) > 3:
-            objectivesText4 = font.render(activeObjectives[3] + ": " + progressObjectives[3], False, (0, 0, 0))
+            objectivesText4 = font.render(activeObjectives[3] + ": " + progressObjectives[3], antiAlias, (0, 0, 0))
 
 scrapPositions = []
 for x in range(3):
@@ -297,16 +298,16 @@ def updateObjectives(*seconds: int):
         objectivesOrder[activeObjectives[x]] = x
 
     if len(activeObjectives) != 0:
-        objectivesText = font.render(activeObjectives[0] + ": " + progressObjectives[0], False, (0, 0, 0))
+        objectivesText = font.render(activeObjectives[0] + ": " + progressObjectives[0], antiAlias, (0, 0, 0))
         objectivesText2 = objectivesPreset
         objectivesText3 = objectivesPreset
         objectivesText4 = objectivesPreset
         if len(activeObjectives) > 1:
-            objectivesText2 = font.render(activeObjectives[1] + ": " + progressObjectives[1], False, (0, 0, 0))
+            objectivesText2 = font.render(activeObjectives[1] + ": " + progressObjectives[1], antiAlias, (0, 0, 0))
             if len(activeObjectives) > 2:
-                objectivesText3 = font.render(activeObjectives[2] + ": " + progressObjectives[2], False, (0, 0, 0))
+                objectivesText3 = font.render(activeObjectives[2] + ": " + progressObjectives[2], antiAlias, (0, 0, 0))
                 if len(activeObjectives) > 3:
-                    objectivesText4 = font.render(activeObjectives[3] + ": " + progressObjectives[3], False, (0, 0, 0))
+                    objectivesText4 = font.render(activeObjectives[3] + ": " + progressObjectives[3], antiAlias, (0, 0, 0))
 
     if "Collect 3 scrap" in activeObjectives:
         progressObjectives[objectivesOrder["Collect 3 scrap"]] = str(len(scrapPositions) * -1 + 3) + "/3"
@@ -330,10 +331,10 @@ def updateObjectives(*seconds: int):
 
 
 
-wonText = font.render("You won!", False, (0, 255, 0))
-deadText = font.render("Game Over", False, (255, 0, 0))
-reasonDeathText = font.render(f"Reason of death: {reasonOfDeath}", False, (255, 0, 0))
-copyrightText = font.render("©Cat Games 2022", False, (0,0,0))
+wonText = font.render("You won!", antiAlias, (0, 255, 0))
+deadText = font.render("Game Over", antiAlias, (255, 0, 0))
+reasonDeathText = font.render(f"Reason of death: {reasonOfDeath}", antiAlias, (255, 0, 0))
+copyrightText = font.render("©Cat Games 2022", antiAlias, (0,0,0))
 
 while r:
     clock.tick()
@@ -399,9 +400,9 @@ while r:
         updateObjectives()
         secondTime -= 0.1 * (clock.get_time() / 100)
         if secondTime < 10:
-            secondText = font.render("Time: " + str(secondTime)[0], True, (255, 0, 0))
+            secondText = font.render("Time: " + str(secondTime)[0], antiAlias, (255, 0, 0))
         else:
-            secondText = font.render("Time: " + str(secondTime)[0] + str(secondTime)[1], True, (0, 0, 0))
+            secondText = font.render("Time: " + str(secondTime)[0] + str(secondTime)[1], antiAlias, (0, 0, 0))
         screen.fill((0, 50, 255))
         renderGrass()
         player.movePlayer()
@@ -493,12 +494,12 @@ while r:
         if random.randint(0, 2500) == 1 and canNewFast and doRandomKeyPresses:
             canNewFast = False
             rKey = random.choice(s.ascii_lowercase)
-            pressText = qFont.render(f"Quick, press '{rKey}'! Remaining time: {pressTimer}", False, (200, 0, 100))
+            pressText = qFont.render(f"Quick, press '{rKey}'! Remaining time: {pressTimer}", antiAlias, (200, 0, 100))
             pressTimer = 2
 
         if not canNewFast:
             pressTimer -= 0.1 * (clock.get_time() / 100)
-            pressText = qFont.render(f"Quick, press '{rKey}'! Remaining time: {str(pressTimer)[0]}", False,
+            pressText = qFont.render(f"Quick, press '{rKey}'! Remaining time: {str(pressTimer)[0]}", antiAlias,
                                      (200, 0, 100))
             screen.blit(pressText, (300, 100))
             keys = pygame.key.get_pressed()
@@ -516,7 +517,7 @@ while r:
         if waitSeconds > 2000:
             screen.blit(wonText, (500, 720 / 2))
             endPlayerAddX += (1 * (clock.get_time() / 2))
-            secondText = font.render("Time is up!", False, (250, 0, 0))
+            secondText = font.render("Time is up!", antiAlias, (250, 0, 0))
             if playWSound:
                 cheerS.play()
                 playWSound = False
@@ -526,8 +527,8 @@ while r:
 
     elif endDead:
 
-        reasonDeathText = font.render(f"Reason of death: {reasonOfDeath}", False, (255, 0, 0))
-        secondText = font.render("Time is up!", False, (250, 0, 0))
+        reasonDeathText = font.render(f"Reason of death: {reasonOfDeath}", antiAlias, (255, 0, 0))
+        secondText = font.render("Time is up!", antiAlias, (250, 0, 0))
         if not hitPlayer:
             screen.fill((0, 50, 255))
         else:
