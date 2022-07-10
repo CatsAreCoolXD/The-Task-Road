@@ -5,7 +5,7 @@
 # Gemaakt in 7 uur, daarna had ik meer toegevoegd
 
 project_info = {
-    "version": "v0.141"
+    "version": "v0.152"
 }
 
 import random
