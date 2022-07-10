@@ -5,7 +5,7 @@
 # Gemaakt in 7 uur, daarna had ik meer toegevoegd
 
 project_info = {
-    "version": "v0.14"
+    "version": "v0.141"
 }
 
 import random
@@ -62,32 +62,32 @@ r = True
 
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption(f"The Task Road {project_info['version']}")
-car = pygame.image.load("car.png").convert()
+car = pygame.image.load("res/car.png").convert()
 car = pygame.transform.scale(car, (car.get_width() * 2, car.get_height() * 2))
-player2 = pygame.image.load("player.png").convert()
-explosion = pygame.image.load("explosion.png").convert()
+player2 = pygame.image.load("res/player.png").convert()
+explosion = pygame.image.load("res/explosion.png").convert()
 explosion = pygame.transform.scale(explosion, (explosion.get_width()*1.25, explosion.get_height()*1.25))
-bed = pygame.image.load("bed.png").convert()
+bed = pygame.image.load("res/bed.png").convert()
 bed = pygame.transform.scale(bed, (1280, 720))
-playerTRight = pygame.image.load("playerTransparentRight.png").convert_alpha()
-playerTLeft = pygame.image.load("playerTransparentLeft.png").convert_alpha()
+playerTRight = pygame.image.load("res/playerTransparentRight.png").convert_alpha()
+playerTLeft = pygame.image.load("res/playerTransparentLeft.png").convert_alpha()
 playerInBed = pygame.transform.rotate(playerTRight, 57)
-grass = pygame.image.load("grass.png").convert()
-dirt = pygame.image.load("dirt.png").convert()
-scrap = pygame.image.load("scrap.png").convert_alpha()
+grass = pygame.image.load("res/grass.png").convert()
+dirt = pygame.image.load("res/dirt.png").convert()
+scrap = pygame.image.load("res/scrap.png").convert_alpha()
 scrap = pygame.transform.scale(scrap, (scrap.get_width()/15, scrap.get_height()/15))
-amogus = pygame.image.load("amogus.png").convert_alpha()
+amogus = pygame.image.load("res/amogus.png").convert_alpha()
 amogus = pygame.transform.scale(amogus, (amogus.get_width()/10, amogus.get_height()/10))
-playerLeft = pygame.image.load("playerLeft.png").convert()
-playerDead = pygame.image.load("playerDead.png").convert()
-carT = pygame.image.load("carTransparent.png").convert_alpha()
+playerLeft = pygame.image.load("res/playerLeft.png").convert()
+playerDead = pygame.image.load("res/playerDead.png").convert()
+carT = pygame.image.load("res/carTransparent.png").convert_alpha()
 carT = pygame.transform.scale(carT, (carT.get_width() * 2, carT.get_height() * 2))
-explosionS = pygame.mixer.Sound("explosion.wav")
-jumpS = pygame.mixer.Sound("jump.wav")
-susS = pygame.mixer.Sound("sus.wav")
-clickS = pygame.mixer.Sound("click.wav")
-cheerS = pygame.mixer.Sound("kids_cheering.wav")
-gameOverS = pygame.mixer.Sound("game_over.wav")
+explosionS = pygame.mixer.Sound("res/explosion.wav")
+jumpS = pygame.mixer.Sound("res/jump.wav")
+susS = pygame.mixer.Sound("res/sus.wav")
+clickS = pygame.mixer.Sound("res/click.wav")
+cheerS = pygame.mixer.Sound("res/kids_cheering.wav")
+gameOverS = pygame.mixer.Sound("res/game_over.wav")
 
 carAddX = 0
 waitTime = 0
