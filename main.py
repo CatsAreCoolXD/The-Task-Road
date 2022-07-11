@@ -5,17 +5,54 @@
 # Gemaakt in 7 uur, daarna had ik meer toegevoegd
 
 project_info = {
-    "version": "v0.152"
+    "version": "v0.2"
 }
 
 import random
 import pygame
 import string as s
 import math
+import configparser
 
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
+
+config = configparser.ConfigParser()
+config.read("settings.ini")
+
+try:
+    config.add_section("SETTINGS")
+except configparser.DuplicateSectionError:
+    pass
+
+with open("settings.ini", "w") as configFile:
+    config.write(configFile)
+
+settings = [
+    "soundVolume",
+    "doRandomKeyPresses",
+    "antiAlias",
+    "skipBeginCutscene",
+]
+settingsValues = {}
+valueHelper = {0: False, 1: True}
+
+for setting in settings:
+    try:
+        value = config.get("SETTINGS", setting)
+        settingsValues[setting] = value
+    except configparser.NoOptionError:
+        print(f"No option '{setting}' in section 'SETTINGS'")
+
+# Gamerules
+doRandomKeyPresses = config.getboolean("SETTINGS", "doRandomKeyPresses")
+includeObjective = ""
+amountObjective = 0
+soundVolume = config.getint("SETTINGS", "soundVolume")
+antiAlias = config.getboolean("SETTINGS", "antiAlias")
+skipBegin = config.getboolean("SETTINGS", "skipBeginCutscene")
+
 
 keyToPygame = {
     "a": pygame.K_a,
@@ -88,6 +125,10 @@ susS = pygame.mixer.Sound("res/sus.wav")
 clickS = pygame.mixer.Sound("res/click.wav")
 cheerS = pygame.mixer.Sound("res/kids_cheering.wav")
 gameOverS = pygame.mixer.Sound("res/game_over.wav")
+gear = pygame.image.load("res/gear.png").convert_alpha()
+gear = pygame.transform.scale(gear, (gear.get_width()/7, gear.get_height()/7))
+onT = pygame.image.load("res/on.png").convert_alpha()
+offT = pygame.image.load("res/off.png").convert_alpha()
 
 carAddX = 0
 waitTime = 0
@@ -110,6 +151,7 @@ playWSound = True
 playedCSound = False
 canNewFast = True
 clicked = False
+settings = False
 waitSeconds = 0
 endPlayerAddX = 0
 secondWait = 0
@@ -123,31 +165,24 @@ clickTotal = 0
 
 # Elke seconde increasen die wait dingen bij 500
 
-# Gamerules
-doTesting = True
-doRandomKeyPresses = False
-includeObjective = ""
-amountObjective = 0
-disableSound = True
-antiAlias = True
-
 if includeObjective not in objectivesList and includeObjective != "":
     raise ValueError("Objective not in list of objectives. See variable objectivesList to see all objectives")
 
-if doTesting:
+if skipBegin:
     game = True
     startCutscene = False
 
-if disableSound:
-    cheerS.set_volume(0)
-    jumpS.set_volume(0)
-    explosionS.set_volume(0)
-    gameOverS.set_volume(0)
-    susS.set_volume(0)
-    clickS.set_volume(0)
+
+cheerS.set_volume(soundVolume)
+jumpS.set_volume(soundVolume)
+explosionS.set_volume(soundVolume)
+gameOverS.set_volume(soundVolume)
+susS.set_volume(soundVolume)
+clickS.set_volume(soundVolume)
 
 font = pygame.font.SysFont("Arial", 30, False)
 qFont = pygame.font.SysFont("Arial", 55, False)
+sFont = pygame.font.SysFont("Arial", 70, False)
 
 activeObjectives = []
 objectivesOrder = {}
@@ -195,6 +230,21 @@ startCutsceneEvent = pygame.USEREVENT
 waitTillGame = pygame.USEREVENT
 pygame.time.set_timer(startCutsceneEvent, 2500, 0)
 
+class Switch:
+    def __init__(self, on: bool):
+        self.on = on
+        if self.on:
+            self.texture = onT
+        else:
+            self.texture = offT
+
+    def switch(self):
+        if self.on:
+            self.on = False
+            self.texture = offT
+        else:
+            self.on = True
+            self.texture = onT
 
 class Player:
     def __init__(self, x, y):
@@ -336,6 +386,18 @@ deadText = font.render("Game Over", antiAlias, (255, 0, 0))
 reasonDeathText = font.render(f"Reason of death: {reasonOfDeath}", antiAlias, (255, 0, 0))
 copyrightText = font.render("©Cat Games 2022", antiAlias, (0,0,0))
 
+# Settings text
+settingsTextColor = (0,0,0)
+antiAliasText = sFont.render("Anti Alias: ", antiAlias, settingsTextColor)
+doRandomKeyPressesText = sFont.render("Random key presses: ", antiAlias, settingsTextColor)
+soundVolumeText = sFont.render("Sound volume: ", antiAlias, settingsTextColor)
+skipBeginText = sFont.render("Skip begining cutscene: ", antiAlias, settingsTextColor)
+
+# Settings switches
+aliasSwitch = Switch(antiAlias)
+keyPressesSwitch = Switch(doRandomKeyPresses)
+skipBeginSwitch = Switch(skipBegin)
+
 while r:
     clock.tick()
     for event in pygame.event.get():
@@ -364,6 +426,51 @@ while r:
             playedCSound = True
             clicked = True
             updateObjectives()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if game or settings:
+                mouse = pygame.mouse.get_pos()
+                if mouse[0] > 1240 and mouse[0] < 1280:
+                    if mouse[1] > 0 and mouse[1] < 37:
+                        if game:
+                            game = False
+                            settings = True
+                        elif settings:
+                            game = True
+                            settings = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if settings:
+                pos = pygame.mouse.get_pos()
+                if pos[0] > 650 and pos[0] < 650+175:
+                    if pos[1] > 50 and pos[1] < 150:
+                        aliasSwitch.switch()
+                        antiAlias = aliasSwitch.on
+                        # config.remove_option("SETTINGS", "AntiAlias")
+                        config.set("SETTINGS", "antialias", str(aliasSwitch.on))
+                        with open("settings.ini", "w") as configFile:
+                            config.write(configFile)
+
+                        antiAliasText = sFont.render("Anti Alias: ", antiAlias, settingsTextColor)
+                        doRandomKeyPressesText = sFont.render("Random key presses: ", antiAlias, settingsTextColor)
+                        soundVolumeText = sFont.render("Sound volume: ", antiAlias, settingsTextColor)
+                        skipBeginText = sFont.render("Skip begining cutscene: ", antiAlias, settingsTextColor)
+                if pos[0] > 650 and pos[0] < 650+175:
+                    if pos[1] > 200 and pos[1] < 300:
+                        keyPressesSwitch.switch()
+                        doRandomKeyPresses = keyPressesSwitch.on
+                        config.set("SETTINGS", "dorandomkeypresses", str(keyPressesSwitch.on))
+                        with open("settings.ini", "w") as configFile:
+                            config.write(configFile)
+
+                if pos[0] > 650 and pos[0] < 650+175:
+                    if pos[1] > 350 and pos[1] < 450:
+                        skipBeginSwitch.switch()
+                        skipBegin = skipBeginSwitch.on
+                        config.set("SETTINGS", "skipbegincutscene", str(skipBeginSwitch.on))
+                        with open("settings.ini", "w") as configFile:
+                            config.write(configFile)
+
     if startCutscene:
 
         if stopCar:
@@ -412,6 +519,7 @@ while r:
         screen.blit(objectivesText2, (10, 100))
         screen.blit(objectivesText3, (10, 150))
         screen.blit(objectivesText4, (10, 200))
+        screen.blit(gear, (1240,0))
 
         if "Collect 3 scrap" in activeObjectives:
             for x in range(len(scrapPositions)):
@@ -577,9 +685,17 @@ while r:
             if playGOSound:
                 gameOverS.play()
                 playGOSound = False
+    elif settings:
+        screen.fill((0, 50, 255))
+        screen.blit(gear, (1240, 0))
+        screen.blit(antiAliasText, (350, 50))
+        screen.blit(aliasSwitch.texture, (650, 50))
+        screen.blit(doRandomKeyPressesText, (50, 200))
+        screen.blit(keyPressesSwitch.texture, (650, 200))
+        screen.blit(skipBeginText, (0, 350))
+        screen.blit(skipBeginSwitch.texture, (650, 350))
 
     copyrightText.set_alpha(50)
-    screen.blit(copyrightText, (1065, 0))
     pygame.display.flip()
 
 pygame.quit()
