@@ -5,7 +5,10 @@
 # Gemaakt in 7 uur, daarna had ik meer toegevoegd
 
 project_info = {
-    "version": "v0.2"
+    "name": "The Task Road",
+    "version": "v0.21",
+    "creator": "Cat studios 2022",
+    "Origin": "Metis Game Jam 2022",
 }
 
 import random
@@ -52,6 +55,12 @@ amountObjective = 0
 soundVolume = config.getint("SETTINGS", "soundVolume")
 antiAlias = config.getboolean("SETTINGS", "antiAlias")
 skipBegin = config.getboolean("SETTINGS", "skipBeginCutscene")
+testing = config.getboolean("SETTINGS", "testing")
+unlimitedFPS = config.getboolean("SETTINGS", "unlimitedfps")
+fpscap = config.getint("SETTINGS", "fpscap")
+
+if unlimitedFPS:
+    fpscap = math.inf
 
 
 keyToPygame = {
@@ -98,7 +107,7 @@ objectivesList = [
 r = True
 
 screen = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption(f"The Task Road {project_info['version']}")
+pygame.display.set_caption(f"{project_info['name']} {project_info['version']}")
 car = pygame.image.load("res/car.png").convert()
 car = pygame.transform.scale(car, (car.get_width() * 2, car.get_height() * 2))
 player2 = pygame.image.load("res/player.png").convert()
@@ -399,7 +408,7 @@ keyPressesSwitch = Switch(doRandomKeyPresses)
 skipBeginSwitch = Switch(skipBegin)
 
 while r:
-    clock.tick()
+    clock.tick(fpscap)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             r = False
@@ -694,6 +703,7 @@ while r:
         screen.blit(keyPressesSwitch.texture, (650, 200))
         screen.blit(skipBeginText, (0, 350))
         screen.blit(skipBeginSwitch.texture, (650, 350))
+        screen.blit(copyrightText, (525, 650))
 
     copyrightText.set_alpha(50)
     pygame.display.flip()
